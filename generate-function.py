@@ -40,7 +40,7 @@ for frame_number, frame in enumerate(data):
                 elif colour == 2:
                     slots = ["true", "false", "true", "false", "true", "false"]
 
-                command = f"""setblock 0 {-60 + height - i} {j} minecraft:chiseled_bookshelf[facing=east, slot_0_occupied={slots[0]}, slot_1_occupied={slots[1]}, slot_2_occupied={slots[2]}, slot_3_occupied={slots[3]}, slot_4_occupied={slots[4]}, slot_5_occupied={slots[5]}]"""
+                command = f"""setblock 0 {-60 + height - i} {j} minecraft:chiseled_bookshelf[facing=west, slot_0_occupied={slots[0]}, slot_1_occupied={slots[1]}, slot_2_occupied={slots[2]}, slot_3_occupied={slots[3]}, slot_4_occupied={slots[4]}, slot_5_occupied={slots[5]}]"""
                 commands.append(command)
 
     if frame_number != frame_count - 1:

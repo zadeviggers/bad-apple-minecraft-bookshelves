@@ -25,7 +25,7 @@ pip install opencv-python
 ```
 
 Run `process-video.py`.
-You'll now have the video data in a JSON file. It's an array of frames. Each frame is a 2D array of pixels. The value `false` means that a pixel is black, `true` means that a pixel is white.
+You'll now have the video data in a JSON file called `output.data`. It's an array of frames. Each frame is a 2D array of pixels. The value `0` means that a pixel is black, `1` means that a pixel is white, and `2` means that a pixel is grey.
 
 Run `generate-function.py`.
 This will generate the frame files in the datapack template. Once it's done, copy the datapack into the datapacks folder of a Minecraft java edition world save.

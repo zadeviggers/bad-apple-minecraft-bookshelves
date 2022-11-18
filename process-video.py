@@ -40,5 +40,5 @@ while success:
     success, image = videoCap.read()
 
 json_output = json.dumps(output)
-with open("output.json", "w") as outfile:
+with open("output.data", "w") as outfile:
     outfile.write(json_output)

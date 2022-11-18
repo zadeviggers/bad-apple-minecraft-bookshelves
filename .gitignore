@@ -3,3 +3,5 @@ output.json
 .DS_Store
 *.mp4
 *.zip
+output.data
+__pycache__

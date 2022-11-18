@@ -1,7 +1,7 @@
 import json
   
 print("opening json file...")
-f = open("output.json")
+f = open("output.data")
 print("file opened!")
   
 data = json.load(f)
@@ -36,7 +36,7 @@ for frame_number, frame in enumerate(data):
 
     with open(f"datapack/data/bad-apple/functions/frames/frame-{frame_number}.mcfunction", "w") as outfile:
         outfile.write("\n".join(commands))
-        if count % 100 == 0:
+        if frame_number % 100 == 0:
             print(f"generated function {frame_number}")
 
 print("Done!")

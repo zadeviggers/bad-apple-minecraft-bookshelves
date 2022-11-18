@@ -2,6 +2,16 @@
 
 [Video of it working](https://youtu.be/zHtmiLYGzsk)
 
+## How to use the datapack
+
+If you just want to use the datapack in your own world, you can download it from the _releases_ tab.
+
+Use Minecraft snapshot `22w46a` or higher.
+
+I had to assign 20gb of ram to the game to get it to load my save with this datapack.
+
+To play the animation run `/function bad-apple:frames/frame-0`. It'll play at `0, -60, 0`, so it's best viewed on a superflat world.
+
 ## Instructions for running
 
 > If you just want the datapack, go to the _releases_ tab.

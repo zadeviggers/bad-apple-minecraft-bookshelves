@@ -5,6 +5,7 @@ from typing import Optional
 command_start = "setblock "
 command_start_len = len(command_start)
 
+
 height_offset = 50
 
 print("opening json file...")
@@ -26,6 +27,12 @@ functions: list[str] = []
 
 
 prev_frame = 0
+
+height = len(data[0])
+width = len(data[0][0])
+
+canvas_bottom = -60
+canvas_top = canvas_bottom + height
 
 
 def flatten(l: list[list]) -> list:
@@ -89,8 +96,8 @@ def output_frame(output: str, frame_number: int):
     prev_frame = frame_number
 
 
-def get_block_coords(height: int, i: int, j: int):
-    return f"0 {math.ceil((-60 + height - i + height_offset) / 2)} {math.ceil(j / 3)}"
+def get_block_coords(i: int, j: int):
+    return f"0 {math.ceil((canvas_top - i) / 2)} {math.ceil(j / 3)}"
 
 
 def generate_setblock_command(coordinates: str, slots: list[str]):
@@ -122,8 +129,6 @@ def de_dupe_functions(to_check: str) -> Optional[str]:
 
 
 for frame_number, frame in enumerate(data):
-    height = len(frame)
-    width = len(frame[0])
 
     if all_identical(flatten(frame)):
         commands = []

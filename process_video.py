@@ -10,7 +10,7 @@ output = []
 
 count = 0
 
-threshold = 35
+threshold = 50
 
 success, image = videoCap.read()
 while success:

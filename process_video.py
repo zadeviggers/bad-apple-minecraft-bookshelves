@@ -1,13 +1,10 @@
-import cv2
 import json
+import cv2
 
 target_fps = 10
-rgb_white_value = 255 * 3
-rgb_black_value = 0
 
 videoCap = cv2.VideoCapture("bad-apple-original.mp4")
 videoCap.set(cv2.CAP_PROP_FPS, target_fps)
-
 
 output = []
 
@@ -24,15 +21,23 @@ while success:
             # convert to ints from unit8s or whatever they are to avoid issues
             r, g, b = int(rgb[0]), int(rgb[1]), int(rgb[2])
 
-            sum = r + g + b
+            avg = round((r + g + b) / 3)
 
-            if sum == rgb_black_value:
+            if avg == 0:
+                # Black
                 frame_output[i][j] = 0
-            elif sum == rgb_white_value:
+            elif avg == 255:
+                # White
                 frame_output[i][j] = 1
             else:
-                # It'll be grey
+                # Grey
                 frame_output[i][j] = 2
+                # if round(avg / 255) * 255 == 255:
+                #     # Light grey
+                #     frame_output[i][j] = 2
+                # else:
+                #     # Dark grey
+                #     frame_output[i][j] = 3
 
     output.append(frame_output)
     if count % 100 == 0:

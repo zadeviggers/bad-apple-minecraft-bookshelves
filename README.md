@@ -24,13 +24,13 @@ Install `opencv-python`:
 pip install opencv-python
 ```
 
-Run `process-video.py`.
-You'll now have the video data in a JSON file called `output.data`. It's an array of frames. Each frame is a 2D array of pixels. The value `0` means that a pixel is black, `1` means that a pixel is white, and `2` means that a pixel is grey.
+Run `process_video.py`.
+You'll now have the video data in a JSON file called `output.data`. It's an array of frames. Each frame is a 2D array of pixels. The value `0` means that a pixel is black, `1` means that a pixel is white, `2` means that a pixel is grey..
 
-Run `generate-function.py`.
+Run `generate_function.py`.
 This will generate the frame files in the datapack template. Once it's done, copy the datapack into the datapacks folder of a Minecraft java edition world save.
 
 Make sure you're running on Minecraft snapshot `22w46a` or higher.
 I had to assign 20gb of ram to the game to get it to load with the datapack enabled, so be careful.
 
-To play the animation run `/function bad-apple:frames/frame-0`. It'll play at `0, -60, 0`, so it's best viewed on a superflat world.
+To play the animation run `/function bad-apple:_play` (you can also use `/function bad-apple:_stop` to stop the animation). It'll play at `0, -60, 0`, so it's best viewed on a superflat world.

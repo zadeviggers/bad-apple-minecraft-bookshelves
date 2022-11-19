@@ -97,7 +97,7 @@ def output_frame(output: str, frame_number: int):
 
 
 def get_block_coords(i: int, j: int):
-    return f"{math.ceil(j / 3)} {math.ceil((canvas_top - i) / 2)} {z_coordinate}"
+    return f"{math.ceil(j / 6)} {math.ceil((canvas_top - i) / 2)} {z_coordinate}"
 
 
 def get_block_state(slots: list[list[str]]) -> str:
@@ -220,7 +220,7 @@ for frame_number, frame in enumerate(data):
 
             for j in range(len(row)):
                 # Only run this for the first out of every three
-                if (j % 2 != 0) or (j % 3 != 0):
+                if not ((j % 2 == 0) or (j % 3 == 0)):
                     continue
 
                 slots: list[list[str]] = [[], []]

@@ -16,6 +16,8 @@ To play the animation run `/function bad-apple:frames/frame-0`. It'll play at `0
 
 > If you just want the datapack, go to the _releases_ tab.
 
+> Note - I'm currently doing some work on this, so the output is currently so large it's not possible to load the world. Until then, I suggest you use the old pre-generated datapack.
+
 Make sure that the bad apple video is in the root folder (you have to download it yourself) and is named `bad-apple-original.mp4`.
 
 Install `opencv-python`:

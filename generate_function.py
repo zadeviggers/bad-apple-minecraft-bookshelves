@@ -2,11 +2,7 @@ import json
 import math
 from typing import Optional
 
-command_start = "setblock "
-command_start_len = len(command_start)
-
-
-height_offset = 50
+fill_limit = 32_768
 
 print("opening json file...")
 f = open("output.data", encoding="utf-8")
@@ -30,9 +26,13 @@ prev_frame = 0
 
 height = len(data[0])
 width = len(data[0][0])
+total_pixels = width * height
 
 canvas_bottom = -60
 canvas_top = canvas_bottom + height
+canvas_left = 0
+canvas_right = canvas_left + width
+x_coordinate = 0
 
 
 def flatten(l: list[list]) -> list:
@@ -97,11 +97,19 @@ def output_frame(output: str, frame_number: int):
 
 
 def get_block_coords(i: int, j: int):
-    return f"0 {math.ceil((canvas_top - i) / 2)} {math.ceil(j / 3)}"
+    return f"{x_coordinate} {math.ceil((canvas_top - i) / 2)} {math.ceil(j / 3)}"
 
 
-def generate_setblock_command(coordinates: str, slots: list[str]):
-    return f'{command_start}{coordinates} minecraft:chiseled_bookshelf[facing=west, slot_0_occupied={slots[0][0]}, slot_1_occupied={slots[0][1]}, slot_2_occupied={slots[0][2]}, slot_3_occupied={slots[1][0]}, slot_4_occupied={slots[1][1]}, slot_5_occupied={slots[1][2]}]'
+def get_block_state(slots: list[list[str]]) -> str:
+    return f"minecraft:chiseled_bookshelf[facing = west, slot_0_occupied = {slots[0][0]}, slot_1_occupied = {slots[0][1]}, slot_2_occupied = {slots[0][2]}, slot_3_occupied = {slots[1][0]}, slot_4_occupied = {slots[1][1]}, slot_5_occupied = {slots[1][2]}]"
+
+
+def generate_setblock_command(coordinates: str, block_state: str):
+    return f'setblock {coordinates} {block_state}'
+
+
+def generate_fill_command(x1: int, y1: int, x2: int, y2: int, block_state: str):
+    return f"fill {x1} {y1} {z_coordinate} {x2} {y2} {z_coordinate} {block_state}"
 
 
 def all_identical(x: list) -> bool:
@@ -119,7 +127,10 @@ def de_dupe_functions(to_check: str) -> Optional[str]:
     for function in reversed(functions):
         try:
             coords_index = function.index(to_check)
-            start_index = coords_index - command_start_len
+            start_index = 0
+            # If coords_index is less than 10, it's the first command so start_index will be 0.
+            if coords_index > 10:
+                start_index = function.rfind("\n", 0, coords_index)
             end_index = function.index("\n", coords_index)
             substr = function[start_index:end_index]
             return substr
@@ -128,18 +139,35 @@ def de_dupe_functions(to_check: str) -> Optional[str]:
     return None
 
 
+def get_fill_rectangles(x1: int, y1: int, x2: int, y2: int) -> list[tuple[int, int, int, int]]:
+    width = x2 - x1
+    height = y2 - y1
+    area = width * height
+
+    if area < fill_limit:
+        return [(x1, y1, x2, y2)]
+
+    # TODO: Figure out how to split the 2D shape up into rectangles with area less than fill_limit
+
+
+def commands_to_fill_area_solid(x1: int, y1: int, x2: int, y2: int, block_state: string) -> list[str]:
+    rectangles = get_fill_rectangles(x1, y1, x2, y2)
+    commands = []
+    for rectangle in rectangles:
+        commands.append(generate_fill_command(
+            rectangle[0], rectangle[1], rectangle[2], rectangle[3], block_state))
+    return commands
+
+
 for frame_number, frame in enumerate(data):
 
     if all_identical(flatten(frame)):
-        commands = []
 
         slots = colour_to_slots(frame[0][0])
 
-        for i in range(height):
-            for j in range(width):
-                coordinates = get_block_coords(height, i, j)
-                command = generate_setblock_command(coordinates, slots)
-                commands.append(command)
+        commands = commands_to_fill_area(
+            canvas_left, canvas_bottom, canvas_right, canvas_top, get_block_state(slots))
+
         output = "\n".join(commands)
 
         if frame_number == 0 or output != functions[-1]:
@@ -181,7 +209,8 @@ for frame_number, frame in enumerate(data):
                 slots[1].append(get_colour_or_black(books, i + 3, j + 2))
 
                 coordinates = get_block_coords(height, i, j)
-                command = generate_setblock_command(coordinates, slots)
+                command = generate_setblock_command(
+                    coordinates, get_block_state(slots))
 
                 # Don't need to update the block if it was updated to be the same last time it was touched
                 if len(functions) == 0 or de_dupe_functions(coordinates) != command:

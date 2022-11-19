@@ -32,7 +32,7 @@ canvas_bottom = -60
 canvas_top = canvas_bottom + height
 canvas_left = 0
 canvas_right = canvas_left + width
-x_coordinate = 0
+z_coordinate = 0
 
 
 def flatten(l: list[list]) -> list:
@@ -97,11 +97,11 @@ def output_frame(output: str, frame_number: int):
 
 
 def get_block_coords(i: int, j: int):
-    return f"{x_coordinate} {math.ceil((canvas_top - i) / 2)} {math.ceil(j / 3)}"
+    return f"{math.ceil(j / 3)} {math.ceil((canvas_top - i) / 2)} {z_coordinate}"
 
 
 def get_block_state(slots: list[list[str]]) -> str:
-    return f"minecraft:chiseled_bookshelf[facing = west, slot_0_occupied = {slots[0][0]}, slot_1_occupied = {slots[0][1]}, slot_2_occupied = {slots[0][2]}, slot_3_occupied = {slots[1][0]}, slot_4_occupied = {slots[1][1]}, slot_5_occupied = {slots[1][2]}]"
+    return f"minecraft:chiseled_bookshelf[facing = south, slot_0_occupied = {slots[0][0]}, slot_1_occupied = {slots[0][1]}, slot_2_occupied = {slots[0][2]}, slot_3_occupied = {slots[1][0]}, slot_4_occupied = {slots[1][1]}, slot_5_occupied = {slots[1][2]}]"
 
 
 def generate_setblock_command(coordinates: str, block_state: str):
@@ -139,6 +139,13 @@ def de_dupe_functions(to_check: str) -> Optional[str]:
     return None
 
 
+def chunked(lst: list, n: int):
+    # Yields n-sized chunks
+    # From https://stackoverflow.com/a/312464
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 def get_fill_rectangles(x1: int, y1: int, x2: int, y2: int) -> list[tuple[int, int, int, int]]:
     width = x2 - x1
     height = y2 - y1
@@ -147,15 +154,32 @@ def get_fill_rectangles(x1: int, y1: int, x2: int, y2: int) -> list[tuple[int, i
     if area < fill_limit:
         return [(x1, y1, x2, y2)]
 
-    # TODO: Figure out how to split the 2D shape up into rectangles with area less than fill_limit
+    # Kinda cringe thing that just generates vertical slices, but it works.
+
+    num_of_chunks = 2
+
+    to_chunk = [i for i in range(width)]
+
+    output: list[tuple[int, int, int, int]] = []
+
+    chunks = chunked(to_chunk, num_of_chunks)
+
+    for i, chunk in enumerate(chunks):
+        chunk_width = len(chunk)
+        x_pos = x1 + ((i + 1) * chunk_width)
+        output.append((x_pos, y1, x_pos + chunk_width, y2))
+
+    return output
 
 
-def commands_to_fill_area_solid(x1: int, y1: int, x2: int, y2: int, block_state: string) -> list[str]:
+def commands_to_fill_area(x1: int, y1: int, x2: int, y2: int, block_state: str) -> list[str]:
     rectangles = get_fill_rectangles(x1, y1, x2, y2)
     commands = []
+
     for rectangle in rectangles:
         commands.append(generate_fill_command(
             rectangle[0], rectangle[1], rectangle[2], rectangle[3], block_state))
+
     return commands
 
 
@@ -208,7 +232,7 @@ for frame_number, frame in enumerate(data):
                 slots[1].append(get_colour_or_black(books, i + 2, j + 1))
                 slots[1].append(get_colour_or_black(books, i + 3, j + 2))
 
-                coordinates = get_block_coords(height, i, j)
+                coordinates = get_block_coords(i, j)
                 command = generate_setblock_command(
                     coordinates, get_block_state(slots))
 

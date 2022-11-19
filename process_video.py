@@ -10,6 +10,8 @@ output = []
 
 count = 0
 
+threshold = 35
+
 success, image = videoCap.read()
 while success:
     frame_output = []
@@ -23,11 +25,11 @@ while success:
 
             avg = round((r + g + b) / 3)
 
-            if avg == 0:
+            if avg <= (0 + threshold):
                 # Black
                 frame_output[i][j] = 0
-            elif avg == 255:
-                # White
+            elif avg >= (255 - threshold):
+                # White25
                 frame_output[i][j] = 1
             else:
                 # Grey

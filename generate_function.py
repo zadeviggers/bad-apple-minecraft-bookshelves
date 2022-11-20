@@ -156,7 +156,7 @@ def get_fill_rectangles(x1: int, y1: int, x2: int, y2: int) -> list[tuple[int, i
 
     # Kinda cringe thing that just generates vertical slices, but it works.
 
-    num_of_chunks = 2
+    num_of_chunks = math.ceil(area / fill_limit)
 
     to_chunk = [i for i in range(width)]
 
